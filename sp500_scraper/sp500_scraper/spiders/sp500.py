@@ -1,4 +1,5 @@
 import scrapy
+#scrapy crawl sp500 -o ../../../data/sp500_data.csv
 
 class Sp500Spider(scrapy.Spider):
     name = 'sp500'
