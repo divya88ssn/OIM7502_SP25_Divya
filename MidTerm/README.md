@@ -43,7 +43,7 @@ Runs locally and can be shared remotely via Gradio’s public link feature.
 
 
 Running the Demo:
-Open prompt_engineering_playground.py in PyCharm or Jupyter Notebook.
+Open the jupyter notebook submitted in PyCharm or Jupyter Notebook.
 Execute the script (or run all cells if using a notebook).
 Launch the Gradio app with:
 demo.launch(share=True)
