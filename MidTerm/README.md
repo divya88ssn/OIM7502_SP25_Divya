@@ -57,42 +57,31 @@ A public shareable link (if share=True is enabled), such as:
 https://xxxxxx.gradio.live
 
 Gradio Features Used in This Demo
-1. Blocks API
-gr.Blocks() enables building flexible, multi-component UIs.
+This demo uses Gradio to create an interactive chatbot for LLM exploration. It showcases the following core features:
 
-Allows arranging elements (dropdowns, sliders, chatbot) with clean layout control.
+✅ 1. Blocks API for Custom Layouts
+Gradio’s Blocks API allows flexible arrangement of components to create a custom UI workflow.
+In this demo:
 
-2. Chatbot Component
-gr.Chatbot() displays conversation history in a chat bubble format.
+A dropdown menu lets you switch between different models (GPT-2 Small, GPT-2 Medium).
 
-Supports stateful conversations by maintaining history using gr.State().
+Sliders let users control generation parameters (temperature, top_p, max_tokens), affecting how the LLM responds.
 
-3. Dropdown Menu
-gr.Dropdown() allows users to select between different models dynamically.
+A chatbot window displays multi-turn conversations with the selected model.
 
-4. Textbox Input
-gr.Textbox() collects user messages.
+The Blocks API gives full control over layout and event handling, ideal for custom LLM tools and prompt engineering playgrounds.
 
-The .submit() method triggers the model inference when the user presses Enter.
+✅ 2. Interactive LLM Chatbot Demo
+This chatbot demonstrates how you can:
 
-5. Sliders
-gr.Slider() lets users control generation parameters like:
+Send user prompts and view model-generated responses.
 
-max_tokens: limits response length.
+Maintain conversation context using gr.State() for multi-turn interaction with the model.
 
-temperature: controls randomness.
+Experiment with different prompts and models, useful for prompt engineering and model testing.
 
-top_p: controls nucleus sampling.
+✅ 3. Easy Sharing & Deployment
+Run locally on your laptop (localhost:7860), useful for personal testing.
 
-6. Buttons
-gr.Button() clears the chat history and resets the state.
-
-7. State Management
-gr.State() keeps track of chat history between user inputs and responses.
-
-Maintains context awareness by passing the full history to the model.
-
-8. Launch & Sharing
-demo.launch(share=True) runs the app locally and generates a publicly accessible URL, enabling easy sharing for demos and feedback collection.
-
-
+Generate a public link instantly by launching with share=True.
+This makes model sharing simple, enabling feedback collection or demoing your chatbot without deploying to a server.
