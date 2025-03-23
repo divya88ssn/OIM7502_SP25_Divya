@@ -56,5 +56,43 @@ http://127.0.0.1:7860
 A public shareable link (if share=True is enabled), such as:
 https://xxxxxx.gradio.live
 
+Gradio Features Used in This Demo
+1. Blocks API
+gr.Blocks() enables building flexible, multi-component UIs.
+
+Allows arranging elements (dropdowns, sliders, chatbot) with clean layout control.
+
+2. Chatbot Component
+gr.Chatbot() displays conversation history in a chat bubble format.
+
+Supports stateful conversations by maintaining history using gr.State().
+
+3. Dropdown Menu
+gr.Dropdown() allows users to select between different models dynamically.
+
+4. Textbox Input
+gr.Textbox() collects user messages.
+
+The .submit() method triggers the model inference when the user presses Enter.
+
+5. Sliders
+gr.Slider() lets users control generation parameters like:
+
+max_tokens: limits response length.
+
+temperature: controls randomness.
+
+top_p: controls nucleus sampling.
+
+6. Buttons
+gr.Button() clears the chat history and resets the state.
+
+7. State Management
+gr.State() keeps track of chat history between user inputs and responses.
+
+Maintains context awareness by passing the full history to the model.
+
+8. Launch & Sharing
+demo.launch(share=True) runs the app locally and generates a publicly accessible URL, enabling easy sharing for demos and feedback collection.
 
 
