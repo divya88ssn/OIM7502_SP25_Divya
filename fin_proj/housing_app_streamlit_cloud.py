@@ -12,8 +12,8 @@ import seaborn as sns
 # --- Section 1: Load and Prepare Data ---
 
 # Load Zillow datasets
-zhvi_df = pd.read_csv("data/Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv")
-zori_df = pd.read_csv("data/Metro_zori_uc_sfrcondomfr_sm_month.csv")
+zhvi_df = pd.read_csv("fin_proj/data/Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv")
+zori_df = pd.read_csv("fin_proj/data/Metro_zori_uc_sfrcondomfr_sm_month.csv")
 
 # Constants
 d = 0.20       # Down payment
