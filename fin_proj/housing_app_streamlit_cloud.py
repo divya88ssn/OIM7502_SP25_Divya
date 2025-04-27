@@ -212,11 +212,11 @@ with col_b:
         st.metric("Income Needed to Afford Renting", f"${metro_b_data['IncomeNeededToAffordRent']:,.0f}")
 
         st.markdown("#### Affordability Cluster")
-        if metro_b_data['Cluster_Avg'] == 0:
+        if metro_b_data['Cluster_Avg'] == 2:
             st.success("🟢 Lower cost metro (more affordable).")
         elif metro_b_data['Cluster_Avg'] == 1:
             st.error("🔴 Higher tier metro (less affordable).")
-        elif metro_b_data['Cluster_Avg'] == 2:
+        elif metro_b_data['Cluster_Avg'] == 0:
             st.warning("🟡 Mid-tier cost metro.")
 
         st.markdown("#### Volatility Cluster")
