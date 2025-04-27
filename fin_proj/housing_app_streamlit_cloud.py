@@ -1,10 +1,9 @@
 # Install if not already:
-# pip install streamlit pandas numpy scikit-learn matplotlib seaborn pydeck
+# pip install streamlit pandas numpy scikit-learn matplotlib seaborn
 
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pydeck as pdk
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -82,24 +81,20 @@ region_summary.loc[
     'Is_Anomaly'
 ] = 1
 
-# Random Lat/Lon for Map (or replace with real coordinates later)
-np.random.seed(42)
-region_summary['lat'] = np.random.uniform(25, 49, size=len(region_summary))
-region_summary['lon'] = np.random.uniform(-125, -67, size=len(region_summary))
-
 # --- Section 3: Streamlit Layout ---
 
 st.set_page_config(page_title="🏡 US Metro Housing Explorer", layout="wide")
 st.title("🏡 US Metro Housing Affordability Explorer")
 st.markdown(f"**Data snapshot:** {latest_date.strftime('%B %Y')}")
 
-# Metro selection
+# --- Section 4: Single Metro Explorer ---
+
+st.header("📍 Explore a Single Metro")
+
 selected_region = st.selectbox("Select Metro:", region_summary['RegionName'].sort_values())
 
 if selected_region:
     region_data = region_summary[region_summary['RegionName'] == selected_region].iloc[0]
-
-    st.header(f"📍 {selected_region}")
 
     col1, col2, col3 = st.columns(3)
 
@@ -132,68 +127,7 @@ if selected_region:
     else:
         st.success("✅ No anomaly detected.")
 
-    # --- Section 4: Heatmap Segment for Metro ---
-
-    st.subheader("📍 Metro Segment on Map")
-
-    # Filter only selected metro
-    selected_df = region_summary[region_summary['RegionName'] == selected_region]
-
-    # Create combined Segment
-    def assign_segment(row):
-        if row['Cluster_Avg'] == 0 and row['Cluster_Vol'] == 0:
-            return 'Affordable-Stable'
-        elif row['Cluster_Avg'] == 0 and row['Cluster_Vol'] == 2:
-            return 'Affordable-Volatile'
-        elif row['Cluster_Avg'] == 1 and row['Cluster_Vol'] == 0:
-            return 'Expensive-Stable'
-        elif row['Cluster_Avg'] == 1 and row['Cluster_Vol'] == 2:
-            return 'Expensive-Volatile'
-        elif row['Cluster_Avg'] == 2:
-            return 'Mid-Tier'
-        else:
-            return 'Other'
-
-    selected_df['Segment'] = selected_df.apply(assign_segment, axis=1)
-
-    # Map Segment to Colors
-    segment_colors = {
-        'Affordable-Stable': [0, 200, 0],    # Green
-        'Affordable-Volatile': [255, 215, 0], # Yellow
-        'Expensive-Stable': [0, 0, 255],      # Blue
-        'Expensive-Volatile': [255, 0, 0],    # Red
-        'Mid-Tier': [255, 140, 0],            # Orange
-        'Other': [128, 128, 128],             # Grey
-    }
-
-    selected_df['SegmentColor'] = selected_df['Segment'].map(segment_colors)
-
-    layer = pdk.Layer(
-        "ScatterplotLayer",
-        data=selected_df,
-        get_position='[lon, lat]',
-        get_fill_color='SegmentColor',
-        get_radius=70000,
-        pickable=True,
-    )
-
-    view_state = pdk.ViewState(
-        latitude=float(selected_df['lat']),
-        longitude=float(selected_df['lon']),
-        zoom=6,
-    )
-
-    deck_map = pdk.Deck(
-        layers=[layer],
-        initial_view_state=view_state,
-        tooltip={
-            "html": "<b>{RegionName}</b><br/>Segment: {Segment}<br/>Affordability Cluster: {Cluster_Avg}<br/>Volatility Cluster: {Cluster_Vol}"
-        }
-    )
-
-    st.pydeck_chart(deck_map)
-
-    # --- Section 5: Combined YoY Trendlines ---
+    # --- Section 5: YoY Trendlines for Single Metro ---
 
     st.header("📈 Year-over-Year (YoY) Trends for Selected Metro")
 
@@ -210,11 +144,10 @@ if selected_region:
     ax2.legend()
     st.pyplot(fig2)
 
-# --- Section 6: Side-by-Side Boxplot for Affordability ---
+# --- Section 6: Affordability Distribution Across Metros ---
 
 st.header("📊 Affordability Distribution Across Metros")
 
-# Prepare long-format DataFrame for boxplot
 affordability_long = pd.DataFrame({
     'AffordabilityType': ['Buy'] * len(region_summary) + ['Rent'] * len(region_summary),
     'IncomeNeeded': pd.concat([
@@ -227,6 +160,78 @@ fig1, ax1 = plt.subplots(figsize=(12, 6))
 sns.boxplot(x='AffordabilityType', y='IncomeNeeded', data=affordability_long, ax=ax1)
 ax1.set_title('Income Needed to Afford Buying vs Renting')
 st.pyplot(fig1)
+
+# --- Section 7: Compare Two Metros Side-by-Side (Separate) ---
+
+st.header("🏙️ Compare Two Metros Independently")
+
+col_a, col_b = st.columns(2)
+
+with col_a:
+    st.subheader("📍 Metro A")
+    metro_a = st.selectbox("Select Metro A:", region_summary['RegionName'].sort_values(), key="metro_a")
+
+    if metro_a:
+        metro_a_data = region_summary[region_summary['RegionName'] == metro_a].iloc[0]
+
+        st.metric("Monthly Payment (Mortgage)", f"${metro_a_data['TotalMonthlyPayment']:,.0f}")
+        st.metric("Income Needed to Afford Buying", f"${metro_a_data['IncomeNeededToAffordHome']:,.0f}")
+        st.metric("Income Needed to Afford Renting", f"${metro_a_data['IncomeNeededToAffordRent']:,.0f}")
+
+        st.markdown("#### Affordability Cluster")
+        if metro_a_data['Cluster_Avg'] == 0:
+            st.success("🟢 Lower cost metro (more affordable).")
+        elif metro_a_data['Cluster_Avg'] == 1:
+            st.error("🔴 Higher tier metro (less affordable).")
+        elif metro_a_data['Cluster_Avg'] == 2:
+            st.warning("🟡 Mid-tier cost metro.")
+
+        st.markdown("#### Volatility Cluster")
+        if metro_a_data['Cluster_Vol'] == 0:
+            st.success("🟢 Stable price changes.")
+        elif metro_a_data['Cluster_Vol'] == 1:
+            st.warning("🟡 Moderate volatility.")
+        elif metro_a_data['Cluster_Vol'] == 2:
+            st.error("🔴 High volatility metro.")
+
+        st.markdown("#### Anomaly Status")
+        if metro_a_data['Is_Anomaly'] == 1:
+            st.error("⚠️ Flagged as Anomaly!")
+        else:
+            st.success("✅ No anomaly detected.")
+
+with col_b:
+    st.subheader("📍 Metro B")
+    metro_b = st.selectbox("Select Metro B:", region_summary['RegionName'].sort_values(), key="metro_b")
+
+    if metro_b:
+        metro_b_data = region_summary[region_summary['RegionName'] == metro_b].iloc[0]
+
+        st.metric("Monthly Payment (Mortgage)", f"${metro_b_data['TotalMonthlyPayment']:,.0f}")
+        st.metric("Income Needed to Afford Buying", f"${metro_b_data['IncomeNeededToAffordHome']:,.0f}")
+        st.metric("Income Needed to Afford Renting", f"${metro_b_data['IncomeNeededToAffordRent']:,.0f}")
+
+        st.markdown("#### Affordability Cluster")
+        if metro_b_data['Cluster_Avg'] == 0:
+            st.success("🟢 Lower cost metro (more affordable).")
+        elif metro_b_data['Cluster_Avg'] == 1:
+            st.error("🔴 Higher tier metro (less affordable).")
+        elif metro_b_data['Cluster_Avg'] == 2:
+            st.warning("🟡 Mid-tier cost metro.")
+
+        st.markdown("#### Volatility Cluster")
+        if metro_b_data['Cluster_Vol'] == 0:
+            st.success("🟢 Stable price changes.")
+        elif metro_b_data['Cluster_Vol'] == 1:
+            st.warning("🟡 Moderate volatility.")
+        elif metro_b_data['Cluster_Vol'] == 2:
+            st.error("🔴 High volatility metro.")
+
+        st.markdown("#### Anomaly Status")
+        if metro_b_data['Is_Anomaly'] == 1:
+            st.error("⚠️ Flagged as Anomaly!")
+        else:
+            st.success("✅ No anomaly detected.")
 
 st.caption("Built with Zillow datasets | Powered by Streamlit 🚀")
 
