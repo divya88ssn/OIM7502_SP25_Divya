@@ -106,11 +106,11 @@ if selected_region:
         st.metric("Income Needed to Afford Renting", f"${region_data['IncomeNeededToAffordRent']:,.0f}")
 
     st.subheader("Affordability Cluster")
-    if region_data['Cluster_Avg'] == 0:
+    if region_data['Cluster_Avg'] == 2:
         st.success("🟢 Lower cost metro (more affordable).")
-    elif region_data['Cluster_Avg'] == 1:
+    elif region_data['Cluster_Avg'] == 0:
         st.error("🔴 Higher tier metro (less affordable).")
-    elif region_data['Cluster_Avg'] == 2:
+    elif region_data['Cluster_Avg'] == 1:
         st.warning("🟡 Mid-tier cost metro.")
 
     st.subheader("Volatility Cluster")
