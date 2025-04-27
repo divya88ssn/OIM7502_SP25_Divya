@@ -1,10 +1,9 @@
 # Install if not already:
-# pip install streamlit pandas numpy scikit-learn matplotlib seaborn pydeck
+# pip install streamlit pandas numpy scikit-learn matplotlib seaborn
 
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pydeck as pdk
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -82,11 +81,6 @@ region_summary.loc[
     'Is_Anomaly'
 ] = 1
 
-# Random Lat/Lon for Map (or replace with real coordinates later)
-np.random.seed(42)
-region_summary['lat'] = np.random.uniform(25, 49, size=len(region_summary))
-region_summary['lon'] = np.random.uniform(-125, -67, size=len(region_summary))
-
 # --- Section 3: Streamlit Layout ---
 
 st.set_page_config(page_title="🏡 US Metro Housing Explorer", layout="wide")
@@ -132,68 +126,7 @@ if selected_region:
     else:
         st.success("✅ No anomaly detected.")
 
-    # --- Section 4: Heatmap Segment for Metro ---
-
-    st.subheader("📍 Metro Segment on Map")
-
-    # Filter only selected metro
-    selected_df = region_summary[region_summary['RegionName'] == selected_region]
-
-    # Create combined Segment
-    def assign_segment(row):
-        if row['Cluster_Avg'] == 0 and row['Cluster_Vol'] == 0:
-            return 'Affordable-Stable'
-        elif row['Cluster_Avg'] == 0 and row['Cluster_Vol'] == 2:
-            return 'Affordable-Volatile'
-        elif row['Cluster_Avg'] == 1 and row['Cluster_Vol'] == 0:
-            return 'Expensive-Stable'
-        elif row['Cluster_Avg'] == 1 and row['Cluster_Vol'] == 2:
-            return 'Expensive-Volatile'
-        elif row['Cluster_Avg'] == 2:
-            return 'Mid-Tier'
-        else:
-            return 'Other'
-
-    selected_df['Segment'] = selected_df.apply(assign_segment, axis=1)
-
-    # Map Segment to Colors
-    segment_colors = {
-        'Affordable-Stable': [0, 200, 0],    # Green
-        'Affordable-Volatile': [255, 215, 0], # Yellow
-        'Expensive-Stable': [0, 0, 255],      # Blue
-        'Expensive-Volatile': [255, 0, 0],    # Red
-        'Mid-Tier': [255, 140, 0],            # Orange
-        'Other': [128, 128, 128],             # Grey
-    }
-
-    selected_df['SegmentColor'] = selected_df['Segment'].map(segment_colors)
-
-    layer = pdk.Layer(
-        "ScatterplotLayer",
-        data=selected_df,
-        get_position='[lon, lat]',
-        get_fill_color='SegmentColor',
-        get_radius=70000,
-        pickable=True,
-    )
-
-    view_state = pdk.ViewState(
-        latitude=float(selected_df['lat']),
-        longitude=float(selected_df['lon']),
-        zoom=6,
-    )
-
-    deck_map = pdk.Deck(
-        layers=[layer],
-        initial_view_state=view_state,
-        tooltip={
-            "html": "<b>{RegionName}</b><br/>Segment: {Segment}<br/>Affordability Cluster: {Cluster_Avg}<br/>Volatility Cluster: {Cluster_Vol}"
-        }
-    )
-
-    st.pydeck_chart(deck_map)
-
-    # --- Section 5: Combined YoY Trendlines ---
+    # --- Section 4: Combined YoY Trendlines (kept) ---
 
     st.header("📈 Year-over-Year (YoY) Trends for Selected Metro")
 
@@ -210,7 +143,7 @@ if selected_region:
     ax2.legend()
     st.pyplot(fig2)
 
-# --- Section 6: Side-by-Side Boxplot for Affordability ---
+# --- Section 5: Side-by-Side Boxplot for Affordability (kept) ---
 
 st.header("📊 Affordability Distribution Across Metros")
 
