@@ -179,19 +179,19 @@ with col_a:
         st.metric("Income Needed to Afford Renting", f"${metro_a_data['IncomeNeededToAffordRent']:,.0f}")
 
         st.markdown("#### Affordability Cluster")
-        if metro_a_data['Cluster_Avg'] == 0:
+        if metro_a_data['Cluster_Avg'] == 2:
             st.success("🟢 Lower cost metro (more affordable).")
         elif metro_a_data['Cluster_Avg'] == 1:
             st.error("🔴 Higher tier metro (less affordable).")
-        elif metro_a_data['Cluster_Avg'] == 2:
+        elif metro_a_data['Cluster_Avg'] == 0:
             st.warning("🟡 Mid-tier cost metro.")
 
         st.markdown("#### Volatility Cluster")
         if metro_a_data['Cluster_Vol'] == 0:
             st.success("🟢 Stable price changes.")
-        elif metro_a_data['Cluster_Vol'] == 1:
-            st.warning("🟡 Moderate volatility.")
         elif metro_a_data['Cluster_Vol'] == 2:
+            st.warning("🟡 Moderate volatility.")
+        elif metro_a_data['Cluster_Vol'] == 1:
             st.error("🔴 High volatility metro.")
 
         st.markdown("#### Anomaly Status")
