@@ -116,9 +116,9 @@ if selected_region:
     st.subheader("Volatility Cluster")
     if region_data['Cluster_Vol'] == 0:
         st.success("🟢 Stable price changes.")
-    elif region_data['Cluster_Vol'] == 1:
-        st.warning("🟡 Moderate volatility.")
     elif region_data['Cluster_Vol'] == 2:
+        st.warning("🟡 Moderate volatility.")
+    elif region_data['Cluster_Vol'] == 1:
         st.error("🔴 High volatility metro.")
 
     st.subheader("Anomaly Status")
