@@ -77,7 +77,7 @@ region_summary = pd.merge(region_summary, volatility, on='RegionName', how='left
 # Mark anomalies manually
 region_summary['Is_Anomaly'] = 0
 region_summary.loc[
-    (region_summary['IncomeNeededToAffordHome'] > 400000) | (region_summary['Cluster_Vol'] == 2),
+    (region_summary['IncomeNeededToAffordHome'] > 400000) | (region_summary['Cluster_Vol'] == 1),
     'Is_Anomaly'
 ] = 1
 
